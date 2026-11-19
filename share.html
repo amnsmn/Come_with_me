@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come With Me — shared guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1ECE2; --card:#FBF9F4; --ink:#233240; --ink-2:#5C6B76; --line:#DED6C7;
+    --tor:#B0542F; --sys:#1B6F8B; --add:#2F6B4F; --cut:#9B2C4F;
+    --p1:#B5642A; --p2:#6B4E9B; --p3:#1E5A7A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;
+    font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Fraunces",serif;letter-spacing:-.01em}
+  button,input,textarea,select{font:inherit;color:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:2px solid var(--sys);outline-offset:2px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+  .wrap{max-width:800px;margin:0 auto;padding:0 18px 70px}
+
+  /* share bar */
+  .sharebar{position:sticky;top:0;z-index:30;margin:0 -18px 20px;padding:11px 18px;
+    background:rgba(241,236,226,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .who{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2)}
+  .av{width:25px;height:25px;border-radius:50%;color:#fff;font-size:11.5px;font-weight:600;
+    display:grid;place-items:center;font-family:"DM Sans",sans-serif;flex:none}
+  .stack{display:flex}
+  .stack .av{margin-left:-7px;border:2px solid var(--paper)}
+  .stack .av:first-child{margin-left:0}
+  .as{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2)}
+  .as select{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 9px;font-size:13px}
+
+  header.top{padding-top:8px;margin-bottom:22px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2)}
+  h1{font-size:clamp(27px,6vw,38px);font-weight:600;margin:6px 0 4px}
+  .sub{color:var(--ink-2);font-size:15px;max-width:60ch}
+  .ro{display:inline-flex;align-items:center;gap:6px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+    color:var(--sys);border:1px solid #B6D4E0;background:#EEF6F9;border-radius:6px;padding:3px 9px;margin-top:10px}
+
+  /* day */
+  .day{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px 14px;margin-bottom:18px}
+  .dhead{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:3px}
+  .badge{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:#fff;
+    padding:3px 9px;border-radius:6px;background:var(--tor)}
+  .dhead h2{font-size:20px;font-weight:600}
+  .dsub{color:var(--ink-2);font-size:13.5px;margin-bottom:12px}
+
+  .row{display:grid;grid-template-columns:58px 1fr;gap:13px;padding:13px 0;border-top:1px solid var(--line)}
+  .row:first-of-type{border-top:none}
+  .time{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-2);padding-top:2px}
+  .place{font-weight:600;font-size:15.5px}
+  .desc{color:var(--ink-2);font-size:14px;margin-top:3px}
+  .rowfoot{display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap}
+  .tiny{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:4px 10px;
+    font-size:12.5px;color:var(--ink-2);transition:.15s}
+  .tiny:hover{border-color:var(--sys);color:var(--ink)}
+  .tiny.on{border-color:var(--add);color:var(--add);background:#EFF6F1}
+
+  /* notes */
+  .note{display:flex;gap:10px;margin-top:10px;padding:11px 13px;border-radius:10px;
+    background:var(--paper);border:1px solid var(--line);border-left-width:3px}
+  .note.p1{border-left-color:var(--p1)} .note.p2{border-left-color:var(--p2)} .note.p3{border-left-color:var(--p3)}
+  .note .body{flex:1;min-width:0}
+  .note .nm{font-size:13px;font-weight:600}
+  .note .nm span{font-weight:400;color:var(--ink-2);font-size:11.5px;margin-left:6px;font-family:"IBM Plex Mono",monospace}
+  .note .tx{font-size:14px;margin-top:2px}
+  .note.sugg{background:#FBF6EE;border-color:#E6D5BC}
+  .sw{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  .sw .o{color:var(--ink-2);text-decoration:line-through}
+  .sw .n{font-weight:600;color:var(--add)}
+  .nacts{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;align-items:center}
+  .ok{border:1px solid var(--add);background:var(--add);color:#fff;border-radius:7px;padding:5px 11px;font-size:12.5px;font-weight:600}
+  .no{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:5px 11px;font-size:12.5px}
+  .no:hover{border-color:var(--cut);color:var(--cut)}
+  .settled{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 9px;border-radius:5px;transform:rotate(-1deg)}
+  .settled.yes{color:var(--add);border:1px solid #BFD9C8;background:#EFF6F1}
+  .settled.nope{color:var(--ink-2);border:1px solid var(--line);background:var(--paper)}
+
+  /* ride offer */
+  .ride{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;padding:11px 13px;
+    border-radius:10px;background:#EFF6F1;border:1px solid #C9DFD1}
+  .ride .t{font-size:13.5px}
+  .ride .t b{font-weight:600}
+  .ride button{margin-left:auto}
+
+  /* composer */
+  .comp{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .comp textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--paper);
+    padding:10px 12px;font-size:14px;resize:vertical;min-height:62px}
+  .comp textarea:focus{border-color:var(--sys);background:var(--card)}
+  .comprow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+  .comprow .hint{font-size:12px;color:var(--ink-2);margin-right:auto}
+  .btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 13px;font-size:13.5px}
+  .btn:hover{border-color:var(--sys)}
+  .btn-go{background:var(--sys);border-color:var(--sys);color:#fff;font-weight:600}
+  .sugbox{display:none;gap:8px;margin-top:8px}
+  .sugbox.open{display:grid;grid-template-columns:1fr 1fr}
+  .sugbox input{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:var(--paper);font-size:13.5px}
+  @media(max-width:560px){.sugbox.open{grid-template-columns:1fr}.row{grid-template-columns:50px 1fr;gap:10px}}
+
+  .owner-only,.friend-only{display:none}
+  body.is-owner .owner-only{display:block}
+  body.is-owner .owner-only.flexy{display:flex}
+  body.is-friend .friend-only{display:block}
+  .foot{font-size:13px;color:var(--ink-2);margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+</style>
+
+<style id="cwm-nav">
+  .cwm-back{position:fixed;left:14px;bottom:14px;z-index:999;display:inline-flex;align-items:center;gap:7px;
+    text-decoration:none;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;
+    background:#0F2833;color:#EAF1F4;border:1px solid rgba(234,241,244,.25);
+    border-radius:999px;padding:8px 14px;box-shadow:0 5px 16px rgba(15,40,51,.26);transition:.15s}
+  .cwm-back:hover{background:#163543;border-color:#EAF1F4}
+  .cwm-back svg{width:13px;height:9px;flex:none}
+  @media print{.cwm-back{display:none}}
+</style>
+</head>
+<body class="is-owner">
+
+<div class="wrap">
+
+  <div class="sharebar">
+    <div class="who">
+      <div class="stack">
+        <div class="av" style="background:var(--p3)">A</div>
+        <div class="av" style="background:var(--p1)">R</div>
+        <div class="av" style="background:var(--p2)">S</div>
+      </div>
+      <span id="presence">Reza and Sara have this open</span>
+    </div>
+    <div class="as">
+      <label for="asWho">Viewing as</label>
+      <select id="asWho">
+        <option value="owner">Amin — owner</option>
+        <option value="friend">Reza — invited to comment</option>
+      </select>
+    </div>
+  </div>
+
+  <header class="top">
+    <div class="kicker">Shared guide · Eastern Canada with the family</div>
+    <h1>The Toronto days</h1>
+    <p class="sub" id="lede">You shared the two days your friends are driving. They can add notes and suggest swaps — they can't change your guide, and nothing lands until you accept it.</p>
+    <span class="ro" id="roTag">You can accept or decline anything they suggest</span>
+  </header>
+
+  <!-- ===== AUG 29 ===== -->
+  <section class="day" data-day="aug29">
+    <div class="dhead"><span class="badge">SAT · AUG 29</span><h2>Full day downtown</h2></div>
+    <p class="dsub">Warm ~26°, mostly dry · no car needed after the morning pickup</p>
+
+    <div class="row"><div class="time">Late<br>AM</div><div>
+      <div class="place">St. Lawrence Market</div>
+      <div class="desc">Peameal bacon sandwich at Carousel Bakery. Closed Mondays, so Saturday works.</div>
+      <div class="rowfoot"><button class="tiny" data-vote>Good call · <b data-n>2</b></button></div>
+
+      <div class="note sugg p1" data-sugg="s1">
+        <div class="av" style="background:var(--p1)">R</div>
+        <div class="body">
+          <div class="nm">Reza <span>yesterday</span></div>
+          <div class="tx">Saturday morning there is a zoo now. Kensington is ten minutes away and you'll eat better — let me take you there instead and we do the market early if you still want it.</div>
+          <div class="sw"><span class="o">St. Lawrence Market</span>
+            <svg width="16" height="9" viewBox="0 0 18 10" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="n">Kensington Market</span></div>
+          <div class="nacts owner-only flexy">
+            <button class="ok" data-accept="s1">Accept the swap</button>
+            <button class="no" data-decline="s1">Keep mine</button>
+          </div>
+          <div class="nacts friend-only" style="display:none"></div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="row"><div class="time">PM</div><div>
+      <div class="place">Graffiti Alley &amp; Queen West</div>
+      <div class="desc">A kilometre of street art, then indie shops along Queen.</div>
+      <div class="rowfoot"><button class="tiny" data-vote>Good call · <b data-n>1</b></button></div>
+    </div></div>
+
+    <div class="row"><div class="time">Warm<br>PM</div><div>
+      <div class="place">Toronto Islands</div>
+      <div class="desc">Ten-minute ferry, best skyline view in the city. Beaches and bikes on Ward's Island.</div>
+      <div class="rowfoot"><button class="tiny" data-vote>Good call · <b data-n>3</b></button></div>
+
+      <div class="note p2">
+        <div class="av" style="background:var(--p2)">S</div>
+        <div class="body">
+          <div class="nm">Sara <span>2 days ago</span></div>
+          <div class="tx">Buy the ferry tickets on your phone before you get to the dock — the queue on a Saturday is the whole problem, and nobody tells you this.</div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="ride">
+      <div class="av" style="background:var(--p1)">R</div>
+      <div class="t"><b>Reza can drive this day</b> — offered to take you downtown and back</div>
+      <button class="btn owner-only" style="display:none" data-ride>Thanks, locked in</button>
+    </div>
+
+    <div class="comp friend-only">
+      <textarea id="c-aug29" placeholder="Add a note for Amin about this day…"></textarea>
+      <div class="sugbox" id="sug-aug29">
+        <input type="text" placeholder="Swap this out…" data-from>
+        <input type="text" placeholder="…for this" data-to>
+      </div>
+      <div class="comprow">
+        <span class="hint">Amin sees this straight away and can accept or decline.</span>
+        <button class="btn" data-toggle-sug="aug29">Suggest a swap</button>
+        <button class="btn btn-go" data-post="aug29">Post note</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SEP 4 ===== -->
+  <section class="day" data-day="sep4">
+    <div class="dhead"><span class="badge">FRI · SEP 4</span><h2>Second helping — no car</h2></div>
+    <p class="dsub">Dry ~25° · car goes back at 9 AM</p>
+
+    <div class="row"><div class="time">Day</div><div>
+      <div class="place">Distillery District or High Park</div>
+      <div class="desc">Still open — whatever you missed on Saturday, or a museum if it turns.</div>
+      <div class="rowfoot"><button class="tiny" data-vote>Good call · <b data-n>0</b></button></div>
+
+      <div class="note p1" data-sugg="s2">
+        <div class="av" style="background:var(--p1)">R</div>
+        <div class="body">
+          <div class="nm">Reza <span>yesterday</span></div>
+          <div class="tx">Leave this one open and come to ours for dinner — Sara's cooking and it's your last night. We'll drive you to Pearson Saturday too, don't book anything.</div>
+          <div class="nacts owner-only flexy">
+            <button class="ok" data-accept="s2">Yes, let's do that</button>
+            <button class="no" data-decline="s2">Keep it flexible</button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="comp friend-only">
+      <textarea id="c-sep4" placeholder="Add a note for Amin about this day…"></textarea>
+      <div class="sugbox" id="sug-sep4">
+        <input type="text" placeholder="Swap this out…" data-from>
+        <input type="text" placeholder="…for this" data-to>
+      </div>
+      <div class="comprow">
+        <span class="hint">Amin sees this straight away and can accept or decline.</span>
+        <button class="btn" data-toggle-sug="sep4">Suggest a swap</button>
+        <button class="btn btn-go" data-post="sep4">Post note</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot" id="footNote">Friends can suggest, vote and offer rides. Only you can change the guide — accepted suggestions rewrite that day and show up in your revision history.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var body = document.body, sel = document.getElementById("asWho");
+
+  function setRole(r){
+    body.classList.toggle("is-owner", r==="owner");
+    body.classList.toggle("is-friend", r==="friend");
+    document.getElementById("lede").textContent = r==="owner"
+      ? "You shared the two days your friends are driving. They can add notes and suggest swaps — they can't change your guide, and nothing lands until you accept it."
+      : "Amin shared these two days with you. Add what you know, suggest a better stop, or offer to drive — he decides what makes it in.";
+    document.getElementById("roTag").textContent = r==="owner"
+      ? "You can accept or decline anything they suggest"
+      : "You can comment and suggest — you can't edit Amin's guide";
+    document.getElementById("presence").textContent = r==="owner"
+      ? "Reza and Sara have this open" : "Amin and Sara have this open";
+    document.getElementById("footNote").textContent = r==="owner"
+      ? "Friends can suggest, vote and offer rides. Only you can change the guide — accepted suggestions rewrite that day and show up in your revision history."
+      : "Your notes reach Amin immediately. Suggestions wait for his yes before they change anything.";
+    document.querySelectorAll("[data-ride]").forEach(function(b){ b.style.display = r==="owner" ? "" : "none"; });
+    try{ localStorage.setItem("comewithme.role", r); }catch(e){}
+  }
+  sel.addEventListener("change", function(){ setRole(sel.value); });
+
+  document.addEventListener("click", function(e){
+    var t = e.target.closest ? e.target.closest("button") : null;
+    if(!t) return;
+
+    if(t.hasAttribute("data-vote")){
+      var n = t.querySelector("[data-n]"), v = parseInt(n.textContent,10)||0;
+      var on = t.classList.toggle("on");
+      n.textContent = on ? v+1 : Math.max(0,v-1);
+      return;
+    }
+
+    if(t.dataset.accept || t.dataset.decline){
+      var id = t.dataset.accept || t.dataset.decline;
+      var note = document.querySelector('[data-sugg="'+id+'"]');
+      if(!note) return;
+      var acts = note.querySelector(".nacts");
+      var yes = !!t.dataset.accept;
+      acts.innerHTML = '<span class="settled '+(yes?"yes":"nope")+'">'+
+        (yes ? "accepted — your guide is updated" : "declined — plan unchanged")+'</span>'+
+        '<button class="no" data-undo>Undo</button>';
+      if(yes){
+        var sw = note.querySelector(".sw");
+        if(sw){
+          var row = note.closest(".row");
+          var place = row.querySelector(".place"), desc = row.querySelector(".desc");
+          note.dataset.oldPlace = place.textContent;
+          note.dataset.oldDesc = desc.textContent;
+          place.textContent = sw.querySelector(".n").textContent;
+          desc.textContent = "Swapped in from Reza's suggestion — he's taking you.";
+        }
+      }
+      return;
+    }
+
+    if(t.hasAttribute("data-undo")){
+      var nt = t.closest("[data-sugg]");
+      if(nt && nt.dataset.oldPlace){
+        var r2 = nt.closest(".row");
+        r2.querySelector(".place").textContent = nt.dataset.oldPlace;
+        r2.querySelector(".desc").textContent = nt.dataset.oldDesc;
+        delete nt.dataset.oldPlace;
+      }
+      var id2 = nt ? nt.dataset.sugg : null;
+      var acts2 = nt.querySelector(".nacts");
+      var isSwap = !!nt.querySelector(".sw");
+      acts2.innerHTML = '<button class="ok" data-accept="'+id2+'">'+(isSwap?"Accept the swap":"Yes, let's do that")+'</button>'+
+        '<button class="no" data-decline="'+id2+'">'+(isSwap?"Keep mine":"Keep it flexible")+'</button>';
+      return;
+    }
+
+    if(t.dataset.ride){ t.textContent = "Locked in — thanks Reza"; t.style.borderColor="var(--add)"; t.style.color="var(--add)"; return; }
+
+    if(t.dataset.toggleSug){
+      document.getElementById("sug-"+t.dataset.toggleSug).classList.toggle("open");
+      return;
+    }
+
+    if(t.dataset.post){
+      var key = t.dataset.post;
+      var ta = document.getElementById("c-"+key);
+      var box = document.getElementById("sug-"+key);
+      var from = box.querySelector("[data-from]").value.trim();
+      var to = box.querySelector("[data-to]").value.trim();
+      var txt = ta.value.trim();
+      if(!txt && !(from&&to)){ ta.focus(); return; }
+      var day = t.closest(".day");
+      var rows = day.querySelectorAll(".row");
+      var host = rows[rows.length-1].querySelector("div:last-child");
+      var n = document.createElement("div");
+      n.className = "note p1" + (from&&to ? " sugg" : "");
+      n.innerHTML = '<div class="av" style="background:var(--p1)">R</div><div class="body">'+
+        '<div class="nm">Reza <span>just now</span></div>'+
+        (txt ? '<div class="tx">'+txt.replace(/[<>&]/g,"")+'</div>' : '')+
+        (from&&to ? '<div class="sw"><span class="o">'+from.replace(/[<>&]/g,"")+'</span>'+
+          '<svg width="16" height="9" viewBox="0 0 18 10" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+          '<span class="n">'+to.replace(/[<>&]/g,"")+'</span></div>' : '')+
+        '<div class="nacts" style="margin-top:8px"><span class="settled nope">sent to Amin</span></div></div>';
+      host.appendChild(n);
+      ta.value=""; box.querySelector("[data-from]").value=""; box.querySelector("[data-to]").value="";
+      box.classList.remove("open");
+      return;
+    }
+  });
+
+  var saved = "owner";
+  try{ saved = localStorage.getItem("comewithme.role") || "owner"; }catch(e){}
+  sel.value = saved; setRole(saved);
+})();
+</script>
+
+<a class="cwm-back" href="index.html">
+  <svg viewBox="0 0 18 10" aria-hidden="true"><path d="M18 5H3M7 1L2 5l5 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  All screens
+</a>
+</body>
+</html>

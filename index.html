@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come With Me — the trip guide that keeps itself current</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep:#0F2833; --deep-2:#163543;
+    --paper:#EFEAE0; --card:#FBF9F4; --ink:#1B303B; --ink-2:#5C6B76; --line:#DCD4C6;
+    --sys:#2E90AE; --cut:#C25A78; --add:#5FAE84; --maple:#C67D1E;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.disp{font-family:"Fraunces",serif;letter-spacing:-.015em;line-height:1.05}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--sys);outline-offset:3px;border-radius:5px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .wrap{max-width:860px;margin:0 auto;padding:0 22px}
+
+  /* ===== hero ===== */
+  .hero{background:var(--deep);color:#EAF1F4;padding:62px 0 56px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+    background-size:30px 30px}
+  .hero .wrap{position:relative}
+  .tagline{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--sys);margin-bottom:26px}
+  .moment{font-size:14.5px;color:#9FB6C0;max-width:46ch;margin-bottom:20px}
+
+  .bigdiff{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:8px}
+  .bigdiff .n{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(50px,13vw,96px);line-height:.92}
+  .bigdiff .from{color:#5E7986;position:relative}
+  .bigdiff .from::after{content:"";position:absolute;left:-4%;right:-4%;top:52%;height:4px;background:var(--cut);
+    transform:scaleX(0);transform-origin:left;animation:strike .5s .55s ease-out forwards}
+  @keyframes strike{to{transform:scaleX(1)}}
+  .bigdiff .to{color:#EAF1F4;opacity:0;animation:pop .45s .95s ease-out forwards}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .bigdiff .lbl{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:#7E99A5;width:100%}
+
+  .hero h1{font-size:clamp(27px,5.4vw,42px);font-weight:600;margin:22px 0 14px;max-width:18ch}
+  .hero p.lede{font-size:17px;color:#BACBD3;max-width:54ch}
+  .hero .cta{display:flex;gap:11px;flex-wrap:wrap;margin-top:28px}
+  .btn{display:inline-block;text-decoration:none;border-radius:11px;padding:12px 20px;font-size:15px;font-weight:600;
+    border:1px solid rgba(234,241,244,.28);transition:.15s}
+  .btn:hover{border-color:#EAF1F4}
+  .btn.solid{background:#EAF1F4;color:var(--deep);border-color:#EAF1F4}
+  .btn.solid:hover{background:#fff}
+
+  /* ===== sections ===== */
+  section{padding:62px 0}
+  .kick{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--sys);margin-bottom:12px}
+  h2{font-size:clamp(25px,5vw,35px);font-weight:600;margin-bottom:14px;max-width:22ch}
+  .intro{font-size:16.5px;color:var(--ink-2);max-width:60ch}
+
+  .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:18px;margin-top:32px}
+  .beat{border-top:2px solid var(--line);padding-top:15px}
+  .beat b{display:block;font-family:"Fraunces",serif;font-size:19px;font-weight:600;margin-bottom:6px}
+  .beat p{font-size:14.5px;color:var(--ink-2)}
+
+  /* loop */
+  .loop{counter-reset:s}
+  .screen{display:grid;grid-template-columns:54px 1fr auto;gap:20px;align-items:center;
+    background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px 22px;margin-bottom:12px;
+    text-decoration:none;transition:border-color .15s,transform .15s}
+  .screen:hover{border-color:var(--sys);transform:translateX(3px)}
+  .screen .num{counter-increment:s;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--sys);
+    display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:50%}
+  .screen .num::before{content:counter(s,decimal-leading-zero)}
+  .screen h3{font-family:"Fraunces",serif;font-size:19.5px;font-weight:600}
+  .screen p{font-size:14.5px;color:var(--ink-2);margin-top:3px}
+  .screen .arw{width:22px;height:14px;color:var(--ink-2);flex:none}
+  @media(max-width:620px){
+    .screen{grid-template-columns:38px 1fr;gap:14px}
+    .screen .arw{display:none}
+  }
+
+  /* moat */
+  .moat{background:var(--deep-2);color:#E6EEF1;border-radius:18px;padding:34px 30px;margin-top:14px}
+  .moat h2{color:#fff}
+  .moat .intro{color:#AFC4CD}
+  .moat .three{margin-top:26px}
+  .moat .beat{border-top-color:rgba(230,238,241,.22)}
+  .moat .beat b{color:#fff}
+  .moat .beat p{color:#AFC4CD}
+
+  /* honesty table */
+  .status{border:1px solid var(--line);border-radius:15px;overflow:hidden;margin-top:26px;background:var(--card)}
+  .srow{display:grid;grid-template-columns:96px 1fr;gap:16px;padding:14px 18px;border-top:1px solid var(--line);font-size:15px}
+  .srow:first-child{border-top:none}
+  .tag{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 9px;border-radius:6px;height:fit-content;
+    text-align:center;white-space:nowrap}
+  .tag.real{color:#2F6B4F;border:1px solid #BFD9C8;background:#EFF6F1}
+  .tag.faked{color:var(--maple);border:1px solid #E5CDA4;background:#FBF3E4}
+  .tag.next{color:var(--ink-2);border:1px solid var(--line);background:var(--paper)}
+
+  blockquote{border-left:3px solid var(--sys);padding:4px 0 4px 20px;margin:30px 0 0;
+    font-family:"Fraunces",serif;font-size:clamp(19px,3.4vw,24px);line-height:1.35;max-width:32ch}
+
+  footer{background:var(--deep);color:#8FA8B3;padding:34px 0 44px;font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+  footer b{color:#EAF1F4;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="tagline">Come With Me · working prototype</div>
+    <p class="moment">6:14 on a Sunday morning. A family of three is two hours into the drive from Toronto to Montréal, and the forecast for their arrival afternoon quietly moves.</p>
+
+    <div class="bigdiff">
+      <span class="n from">45%</span>
+      <span class="n to">75%</span>
+      <span class="lbl">rain · Mount Royal · Sunday 30 August</span>
+    </div>
+
+    <h1>Every other planner still had them climbing a mountain.</h1>
+    <p class="lede">Planning tools generate a trip once and then go quiet. But a trip keeps moving after you build it — weather turns, hours change, deadlines lapse, bookings get swapped. Come With Me builds the guide, then keeps it true until you fly home.</p>
+
+    <div class="cta">
+      <a class="btn solid" href="today.html">See what they saw that morning</a>
+      <a class="btn" href="#loop">Walk the whole loop</a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="kick">the problem</div>
+    <h2>Generating an itinerary is the easy part</h2>
+    <p class="intro">Anyone can produce a plausible seven-day plan. The work that actually decides whether a trip goes well happens after that — and it's the part every tool abandons.</p>
+    <div class="three">
+      <div class="beat"><b>It rots on contact</b>
+        <p>A guide written in April is wrong by August. Rain arrives, a restaurant closes Mondays, a rental branch shuts at noon on the Saturday you need it.</p></div>
+      <div class="beat"><b>The details live in your inbox</b>
+        <p>Branch hours, cancellation deadlines, seat numbers, the exact address. No form asks for them. Every confirmation email already has them.</p></div>
+      <div class="beat"><b>Regeneration destroys trust</b>
+        <p>Rebuild the whole plan to fix one day and nothing is recognisable. People stop believing the output and go back to a notes app.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="loop">
+  <div class="wrap">
+    <div class="kick">the loop · five screens, all clickable</div>
+    <h2>Build it, watch it, live it</h2>
+    <p class="intro" style="margin-bottom:30px">Each screen is a working prototype built around one real trip: Vancouver to Toronto, Montréal, Québec City and Niagara, nine days, two adults and a fourteen-year-old.</p>
+
+    <div class="loop">
+      <a class="screen" href="build.html">
+        <span class="num"></span>
+        <span><h3>Tell it the shape of the trip</h3>
+          <p>Dates and stops get you a draft. Then the question that actually matters — what do you want out of this — in your own words, not thirty checkboxes.</p></span>
+        <svg class="arw" viewBox="0 0 22 14"><path d="M0 7h18M14 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+      <a class="screen" href="share.html">
+        <span class="num"></span>
+        <span><h3>Let the people who live there weigh in</h3>
+          <p>Share the days a local friend is driving. They suggest swaps, flag the queue nobody warns you about, offer a lift. You decide what lands.</p></span>
+        <svg class="arw" viewBox="0 0 22 14"><path d="M0 7h18M14 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+      <a class="screen" href="changes.html">
+        <span class="num"></span>
+        <span><h3>Watch what changes</h3>
+          <p>Weather, opening hours, prices and cancellation windows, checked against your booked plan. Every card shows the old value, the new one, and one decision.</p></span>
+        <svg class="arw" viewBox="0 0 22 14"><path d="M0 7h18M14 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+      <a class="screen" href="guide.html">
+        <span class="num"></span>
+        <span><h3>See exactly what it did to your day</h3>
+          <p>Accepted changes rewrite one day in place, with editor's marks showing what went and what came. Put any of it back. Nothing is regenerated behind your back.</p></span>
+        <svg class="arw" viewBox="0 0 22 14"><path d="M0 7h18M14 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+      <a class="screen" href="today.html">
+        <span class="num"></span>
+        <span><h3>Open it standing in the rain</h3>
+          <p>One card: what you're doing now, why it's worth it, how far. Plus what changed overnight, and the contingency still being watched in the background.</p></span>
+        <svg class="arw" viewBox="0 0 22 14"><path d="M0 7h18M14 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="moat">
+      <div class="kick" style="color:var(--sys)">why it holds up</div>
+      <h2>Three things competitors don't do</h2>
+      <p class="intro">Not features — the reasons the output is worth trusting twice.</p>
+      <div class="three">
+        <div class="beat"><b>It reads your confirmations</b>
+          <p>Drop in the rental agreement and it finds the noon Saturday close, the no-after-hours return, the $150 damage admin fee, the spouse who's free but must be at the counter. A form would never ask.</p></div>
+        <div class="beat"><b>It changes one day, not the plan</b>
+          <p>Surgical edits with a visible history and a revert. The guide you read last week is still the guide you're reading — minus the part that stopped being true.</p></div>
+        <div class="beat"><b>It knows a good day from a full one</b>
+          <p>Park the car and take the metro, because the hotel is on Champ-de-Mars. Do the islands Saturday, because that's the dry day. Judgment, not a list of attractions.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kick">where it actually stands</div>
+    <h2>What's real in these prototypes, and what isn't</h2>
+    <p class="intro">Worth being straight about, because the gap between these screens and a product is mostly data plumbing, not design.</p>
+
+    <div class="status">
+      <div class="srow"><span class="tag real">real</span>
+        <span>All five screens, fully interactive — the flows, the state, the decisions, the reverts.</span></div>
+      <div class="srow"><span class="tag real">real</span>
+        <span>Every change shown came from an actual planning session: the 45→75 rain flip, the Monday closure, the branch swap, the improved Niagara forecast.</span></div>
+      <div class="srow"><span class="tag faked">simulated</span>
+        <span>Reading uploaded confirmations. The extraction is mocked and labelled as such in the builder.</span></div>
+      <div class="srow"><span class="tag faked">simulated</span>
+        <span>Live weather, hours and price feeds. The values are real but fixed, not polling.</span></div>
+      <div class="srow"><span class="tag next">next</span>
+        <span>The expensive part: places, hours and weather APIs behind every suggestion, so nothing is invented and every price carries a date.</span></div>
+    </div>
+
+    <blockquote>A trip is a living thing between the day you book it and the day you fly home. Build for that, and the itinerary takes care of itself.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><b>Come With Me</b> — prototype, built around one real nine-day trip</span>
+    <span>Start with <a href="today.html" style="color:#EAF1F4">the rainy Sunday</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come With Me — your guide, kept current</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* the guide: warm printed page */
+    --paper:#F1ECE2; --card:#FBF9F4; --ink:#233240; --ink-2:#5C6B76; --line:#DED6C7;
+    --mtl:#1E5A7A; --nia:#2C8091; --maple:#C67D1E;
+    /* the system: instrument marks */
+    --rev:#1B6F8B; --cut:#9B2C4F; --add:#2F6B4F;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;
+    font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Fraunces",serif;letter-spacing:-.01em}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--rev);outline-offset:2px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+  .wrap{max-width:780px;margin:0 auto;padding:26px 18px 70px}
+
+  /* control strip — the system's voice, visually separate from the page */
+  .control{position:sticky;top:0;z-index:20;margin:-26px -18px 22px;padding:12px 18px;
+    background:rgba(241,236,226,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .control .lede{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--rev)}
+  .control .lede b{color:var(--ink);font-weight:600}
+  .switch{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--card)}
+  .switch button{padding:7px 13px;font-size:13px;border:none;background:transparent;transition:.15s}
+  .switch button.on{background:var(--rev);color:#fff;font-weight:600}
+
+  header.top{margin-bottom:8px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2)}
+  h1{font-size:clamp(28px,6vw,40px);font-weight:600;margin:6px 0 4px}
+  .sub{color:var(--ink-2);font-size:15px;margin-bottom:24px}
+
+  /* day card — the page */
+  .day{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px 10px;margin-bottom:18px;position:relative}
+  .dhead{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:3px}
+  .badge{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:#fff;
+    padding:3px 9px;border-radius:6px;background:var(--mtl)}
+  .badge.nia{background:var(--nia)}
+  .dhead h2{font-size:20px;font-weight:600}
+  .wxi{width:30px;height:30px;margin-left:auto;flex:none}
+  .dsub{color:var(--ink-2);font-size:13.5px;margin-bottom:12px}
+
+  .row{display:grid;grid-template-columns:62px 1fr;gap:14px;padding:13px 0;border-top:1px solid var(--line);position:relative}
+  .row:first-of-type{border-top:none}
+  .time{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-2);padding-top:2px}
+  .place{font-weight:600;font-size:15.5px}
+  .desc{color:var(--ink-2);font-size:14px;margin-top:3px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:6px;
+    background:var(--paper);border:1px solid var(--line);color:var(--ink-2)}
+
+  /* revision marks — only visible in revision mode */
+  .rev-on .row.added{background:linear-gradient(90deg,rgba(47,107,79,.07),transparent 60%)}
+  .rev-on .row.added::before{content:"";position:absolute;left:-22px;top:12px;bottom:12px;width:3px;
+    border-radius:2px;background:var(--add)}
+  .rev-on .row.cut{display:grid}
+  .row.cut{display:none}
+  .rev-on .row.cut .place,.rev-on .row.cut .desc{text-decoration:line-through;
+    text-decoration-color:var(--cut);text-decoration-thickness:1.5px;opacity:.6}
+  .rev-on .row.cut::before{content:"";position:absolute;left:-22px;top:12px;bottom:12px;width:3px;
+    border-radius:2px;background:var(--cut)}
+  .mark{display:none;font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:2px 7px;
+    border-radius:5px;margin-left:8px;vertical-align:2px;white-space:nowrap}
+  .rev-on .mark{display:inline-block}
+  .mark.a{color:var(--add);border:1px solid #BFD9C8;background:#EFF6F1}
+  .mark.c{color:var(--cut);border:1px solid #E0BFC9;background:#FBF0F3}
+
+  /* revision banner */
+  .banner{border-left:3px solid var(--rev);background:#EDF5F8;border-radius:0 10px 10px 0;
+    padding:11px 14px;margin:0 0 14px;font-size:13.5px;display:none}
+  .rev-on .banner{display:block}
+  .banner .h{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--rev);margin-bottom:3px}
+  .banner .why{color:var(--ink-2)}
+  .banner .why b{color:var(--ink)}
+  .diff{display:inline-flex;align-items:center;gap:7px;margin-top:7px;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  .diff .o{color:var(--ink-2);text-decoration:line-through}
+  .diff .n{color:var(--cut);font-weight:600}
+  .diff.up .n{color:var(--add)}
+  .bacts{display:flex;gap:8px;margin-top:10px}
+  .mini{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 11px;font-size:12.5px}
+  .mini:hover{border-color:var(--rev)}
+
+  /* quiet stamp shown in clean mode */
+  .stamp{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--rev);margin-bottom:12px}
+  .rev-on .stamp{display:none}
+
+  /* history */
+  .hist{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 22px 20px;margin-top:22px}
+  .hist h3{font-size:18px;font-weight:600;margin-bottom:12px}
+  .hrow{display:grid;grid-template-columns:78px 1fr auto;gap:12px;padding:11px 0;border-top:1px solid var(--line);
+    align-items:center;font-size:14px}
+  .hrow:first-of-type{border-top:none}
+  .hrow .t{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2)}
+  .hrow .d b{font-weight:600}
+  .hrow .d span{color:var(--ink-2);font-size:13px;display:block}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  @media(max-width:560px){
+    .hrow{grid-template-columns:1fr auto}
+    .hrow .t{grid-column:1/-1}
+    .row{grid-template-columns:54px 1fr;gap:11px}
+    .rev-on .row.added::before,.rev-on .row.cut::before{left:-14px}
+  }
+  .foot{font-size:13px;color:var(--ink-2);margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+</style>
+
+<style id="cwm-nav">
+  .cwm-back{position:fixed;left:14px;bottom:14px;z-index:999;display:inline-flex;align-items:center;gap:7px;
+    text-decoration:none;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;
+    background:#0F2833;color:#EAF1F4;border:1px solid rgba(234,241,244,.25);
+    border-radius:999px;padding:8px 14px;box-shadow:0 5px 16px rgba(15,40,51,.26);transition:.15s}
+  .cwm-back:hover{background:#163543;border-color:#EAF1F4}
+  .cwm-back svg{width:13px;height:9px;flex:none}
+  @media print{.cwm-back{display:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="wx-rain" viewBox="0 0 48 48">
+    <g fill="#8CA0AC"><circle cx="18" cy="22" r="8"/><circle cx="29" cy="19" r="10"/><circle cx="36" cy="24" r="7"/>
+      <rect x="15" y="22" width="24" height="8" rx="4"/></g>
+    <g fill="none" stroke="#1E5A7A" stroke-width="2.6" stroke-linecap="round">
+      <line x1="18" y1="34" x2="15" y2="42"/><line x1="25" y1="34" x2="22" y2="42"/>
+      <line x1="32" y1="34" x2="29" y2="42"/><line x1="39" y1="34" x2="36" y2="42"/></g>
+  </symbol>
+  <symbol id="wx-sun" viewBox="0 0 48 48">
+    <g fill="none" stroke="#C67D1E" stroke-width="2.4" stroke-linecap="round">
+      <line x1="24" y1="5" x2="24" y2="11"/><line x1="24" y1="37" x2="24" y2="43"/>
+      <line x1="5" y1="24" x2="11" y2="24"/><line x1="37" y1="24" x2="43" y2="24"/>
+      <line x1="10.5" y1="10.5" x2="14.5" y2="14.5"/><line x1="33.5" y1="33.5" x2="37.5" y2="37.5"/>
+      <line x1="37.5" y1="10.5" x2="33.5" y2="14.5"/><line x1="14.5" y1="33.5" x2="10.5" y2="37.5"/></g>
+    <circle cx="24" cy="24" r="8.5" fill="#C67D1E"/>
+  </symbol>
+</defs></svg>
+
+<div class="wrap">
+
+  <div class="control">
+    <span class="lede"><b id="revCount">3</b> changes applied since you planned this</span>
+    <div class="switch" role="group" aria-label="View mode">
+      <button id="bClean" class="on">Clean</button>
+      <button id="bRev">Show revisions</button>
+    </div>
+  </div>
+
+  <header class="top">
+    <div class="kicker">Eastern Canada with the family · updated 2h ago</div>
+    <h1>Your guide, kept current</h1>
+    <p class="sub">This is the guide as it reads right now. Switch to <b>Show revisions</b> to see exactly what the system changed, why, and put anything back.</p>
+  </header>
+
+  <!-- ============ AUG 30 ============ -->
+  <section class="day" id="day-30">
+    <div class="dhead"><span class="badge">SUN · AUG 30</span><h2>Arrive in Montréal</h2>
+      <svg class="wxi" viewBox="0 0 48 48"><use href="#wx-rain"/></svg></div>
+    <p class="dsub">~5.5 hr drive · 401 E → A-20 E · toll-free</p>
+
+    <div class="stamp">Rewritten 2h ago after the rain forecast changed.</div>
+    <div class="banner">
+      <div class="h">revised 2h ago · weather</div>
+      <div class="why">The drum circle is outdoor and <b>Sunday-only</b>, so there's no later slot in your trip. Old Montréal is at your hotel door, which keeps the afternoon whole with no travel time lost.</div>
+      <div class="diff"><span class="o">rain 45%</span>
+        <svg width="16" height="9" viewBox="0 0 18 10" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="n">rain 75%</span></div>
+      <div class="bacts"><button class="mini" data-revert="day-30">Put the original back</button></div>
+    </div>
+
+    <div class="row"><div class="time">7:00<br>AM</div><div>
+      <div class="place">Leave Richmond Hill</div>
+      <div class="desc">Empty Sunday roads. Coffee stop in Kingston about 2.5 hr in.</div></div></div>
+
+    <div class="row"><div class="time">~2:00<br>PM</div><div>
+      <div class="place">Drop bags at the Hyatt Centric</div>
+      <div class="desc">Check-in is 4 PM; the desk will hold your bags. Leave the car with valet.</div></div></div>
+
+    <div class="row cut"><div class="time">3:30<br>PM</div><div>
+      <div class="place">Tam-Tams on Mount Royal<span class="mark c">removed</span></div>
+      <div class="desc">Sunday drum circle and picnics at the Cartier monument — the most Montréal thing you can do.</div></div></div>
+
+    <div class="row added"><div class="time">3:00<br>PM</div><div>
+      <div class="place">Notre-Dame Basilica<span class="mark a">added</span></div>
+      <div class="desc">Ten minutes from the hotel and genuinely breathtaking inside — the best indoor hour in Old Montréal.</div>
+      <div class="chips"><span class="chip">~$16</span><span class="chip">10 min walk</span></div></div></div>
+
+    <div class="row added"><div class="time">4:30<br>PM</div><div>
+      <div class="place">Pointe-à-Callière museum<span class="mark a">added</span></div>
+      <div class="desc">Built over the city's original foundations — you walk through the actual ruins underground. Strong pick for Baran.</div>
+      <div class="chips"><span class="chip">~$26</span><span class="chip">5 min walk</span></div></div></div>
+
+    <div class="row added"><div class="time">Watch<br>for it</div><div>
+      <div class="place">If a dry window opens, go<span class="mark a">added</span></div>
+      <div class="desc">The Tam-Tams run to sunset. If the rain breaks, it's a 15-minute Uber up the mountain — worth dropping everything for.</div></div></div>
+
+    <div class="row"><div class="time">Eve</div><div>
+      <div class="place">Dinner in the Plateau</div>
+      <div class="desc">Schwartz's smoked meat, or La Banquise for a first poutine.</div></div></div>
+  </section>
+
+  <!-- ============ AUG 31 ============ -->
+  <section class="day" id="day-31">
+    <div class="dhead"><span class="badge">MON · AUG 31</span><h2>Mile End &amp; the Plateau</h2>
+      <svg class="wxi" viewBox="0 0 48 48"><use href="#wx-sun"/></svg></div>
+    <p class="dsub">Dry and clear — your best Montréal day</p>
+
+    <div class="stamp">One stop swapped 6h ago.</div>
+    <div class="banner">
+      <div class="h">revised 6h ago · opening hours</div>
+      <div class="why">Wilensky's doesn't open Mondays. The replacement is <b>two minutes away</b> on the same walk, so the shape of the day is untouched.</div>
+      <div class="diff"><span class="o">Wilensky's · Mon closed</span>
+        <svg width="16" height="9" viewBox="0 0 18 10" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="n">St-Viateur · open 6am</span></div>
+      <div class="bacts"><button class="mini" data-revert="day-31">Put the original back</button></div>
+    </div>
+
+    <div class="row"><div class="time">9:30<br>AM</div><div>
+      <div class="place">The bagel rivalry</div>
+      <div class="desc">A warm sesame bagel from St-Viateur, then five minutes to Fairmount for the other side of the argument.</div>
+      <div class="chips"><span class="chip">~$1.50 each</span></div></div></div>
+
+    <div class="row"><div class="time">10:30<br>AM</div><div>
+      <div class="place">Café Olimpico</div>
+      <div class="desc">Fifty-year-old Italian bar, no laptops, all locals. Order a cortado standing at the counter.</div></div></div>
+
+    <div class="row cut"><div class="time">Lunch</div><div>
+      <div class="place">Wilensky's Special<span class="mark c">removed</span></div>
+      <div class="desc">Pressed beef bologna and salami with a hand-mixed cherry cola, from a 1932 counter.</div></div></div>
+
+    <div class="row added"><div class="time">Lunch</div><div>
+      <div class="place">St-Viateur bagel with smoked salmon<span class="mark a">added</span></div>
+      <div class="desc">Back to the bagel counter and build lunch there — open from 6am, two minutes off your route.</div>
+      <div class="chips"><span class="chip">~$12</span><span class="chip">open Mondays</span></div></div></div>
+
+    <div class="row"><div class="time">Late<br>PM</div><div>
+      <div class="place">Mount Royal lookout</div>
+      <div class="desc">Up to the Kondiaronk Belvedere for the city view. Golden hour is the moment.</div></div></div>
+  </section>
+
+  <!-- ============ SEP 3 ============ -->
+  <section class="day" id="day-3">
+    <div class="dhead"><span class="badge nia">THU · SEP 3</span><h2>Niagara Falls</h2>
+      <svg class="wxi" viewBox="0 0 48 48"><use href="#wx-sun"/></svg></div>
+    <p class="dsub">Warm ~27° and mostly dry · QEW, never the 407</p>
+
+    <div class="stamp">An evening added 2h ago.</div>
+    <div class="banner">
+      <div class="h">revised 2h ago · weather cleared</div>
+      <div class="why">The forecast improved enough to make the evening worth staying for, and your car isn't due back until <b>9 AM Friday</b> — so a late return costs you nothing.</div>
+      <div class="diff up"><span class="o">rain 45%</span>
+        <svg width="16" height="9" viewBox="0 0 18 10" aria-hidden="true"><path d="M0 5h15M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="n">rain 15%</span></div>
+      <div class="bacts"><button class="mini" data-revert="day-3">Put the original back</button></div>
+    </div>
+
+    <div class="row"><div class="time">7:30<br>AM</div><div>
+      <div class="place">Leave Thornhill</div>
+      <div class="desc">Early start beats the parking crush. At Table Rock by about 9:30.</div></div></div>
+
+    <div class="row"><div class="time">10:00<br>AM</div><div>
+      <div class="place">Niagara City Cruises</div>
+      <div class="desc">The catamaran to the foot of Horseshoe Falls. Book online to skip the queue.</div>
+      <div class="chips"><span class="chip">~$48 adult</span></div></div></div>
+
+    <div class="row"><div class="time">1:00<br>PM</div><div>
+      <div class="place">Niagara-on-the-Lake</div>
+      <div class="desc">Twenty minutes up the parkway for a calmer lunch, away from the arcade strip.</div></div></div>
+
+    <div class="row cut"><div class="time">5:00<br>PM</div><div>
+      <div class="place">Head home for an easy evening<span class="mark c">removed</span></div>
+      <div class="desc">Back to Thornhill before dark.</div></div></div>
+
+    <div class="row added"><div class="time">8:00<br>PM</div><div>
+      <div class="place">Stay for the falls illumination<span class="mark a">added</span></div>
+      <div class="desc">The falls light up nightly at dusk and the crowds have thinned by then. Drive back after — the car isn't due until 9 AM.</div>
+      <div class="chips"><span class="chip">free</span><span class="chip">~1.5 hr drive back</span></div></div></div>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section class="hist">
+    <h3>Every change, since you built this</h3>
+    <div class="hrow"><span class="t">2h ago</span>
+      <span class="d"><b>Aug 30 rewritten</b><span>Rain went 45% → 75%. Tam-Tams out, indoor Old Montréal in.</span></span>
+      <span class="dot" style="background:var(--cut)"></span></div>
+    <div class="hrow"><span class="t">2h ago</span>
+      <span class="d"><b>Sep 3 extended</b><span>Rain went 45% → 15%. Evening illumination added.</span></span>
+      <span class="dot" style="background:var(--add)"></span></div>
+    <div class="hrow"><span class="t">6h ago</span>
+      <span class="d"><b>Aug 31 stop swapped</b><span>Wilensky's closed Mondays. St-Viateur lunch in its place.</span></span>
+      <span class="dot" style="background:var(--rev)"></span></div>
+    <div class="hrow"><span class="t">yesterday</span>
+      <span class="d"><b>Aug 29 &amp; Sep 4 updated</b><span>Rental branch moved to Richmond Hill — noon Saturday close, no after-hours return.</span></span>
+      <span class="dot" style="background:var(--rev)"></span></div>
+    <div class="hrow"><span class="t">Aug 26</span>
+      <span class="d"><b>Guide built</b><span>9 days, 3 stops, 3 travellers.</span></span>
+      <span class="dot" style="background:var(--line)"></span></div>
+  </section>
+
+  <p class="foot">Nothing here was regenerated from scratch. Each change touched one day and left the rest of your guide exactly as you last read it.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var body = document.body, clean = document.getElementById("bClean"), rev = document.getElementById("bRev");
+
+  function mode(on){
+    body.classList.toggle("rev-on", on);
+    rev.classList.toggle("on", on);
+    clean.classList.toggle("on", !on);
+    try{ localStorage.setItem("comewithme.revmode", on ? "1" : "0"); }catch(e){}
+  }
+  clean.addEventListener("click", function(){ mode(false); });
+  rev.addEventListener("click", function(){ mode(true); });
+
+  document.addEventListener("click", function(e){
+    var b = e.target.closest ? e.target.closest("[data-revert]") : null;
+    if(!b) return;
+    var day = document.getElementById(b.dataset.revert);
+    if(!day) return;
+    var undone = day.dataset.reverted === "1";
+    day.querySelectorAll(".row.added").forEach(function(r){ r.style.display = undone ? "" : "none"; });
+    day.querySelectorAll(".row.cut").forEach(function(r){
+      r.style.display = undone ? "" : "grid";
+      r.querySelectorAll(".place,.desc").forEach(function(x){ x.style.textDecoration = undone ? "" : "none"; x.style.opacity = undone ? "" : "1"; });
+      r.querySelectorAll(".mark").forEach(function(m){ m.style.display = undone ? "" : "none"; });
+    });
+    day.dataset.reverted = undone ? "0" : "1";
+    b.textContent = undone ? "Put the original back" : "Re-apply the change";
+    day.querySelector(".stamp").textContent = undone ? day.dataset.stamp : "Original restored — this day is yours again.";
+    var n = document.querySelectorAll('[data-reverted="1"]').length;
+    document.getElementById("revCount").textContent = 3 - n;
+  });
+
+  document.querySelectorAll(".day").forEach(function(d){
+    var s = d.querySelector(".stamp"); if(s) d.dataset.stamp = s.textContent;
+  });
+
+  try{ if(localStorage.getItem("comewithme.revmode") === "1") mode(true); }catch(e){}
+})();
+</script>
+
+<a class="cwm-back" href="index.html">
+  <svg viewBox="0 0 18 10" aria-hidden="true"><path d="M18 5H3M7 1L2 5l5 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  All screens
+</a>
+</body>
+</html>
